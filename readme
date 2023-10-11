@@ -1,0 +1,4 @@
+1. First download and install Visual Studio Build Tools. You can download them from: https://visualstudio.microsoft.com/visual-cpp-build-tools/
+
+2. pip install dlib
+3. pip install -r requirements.txt
