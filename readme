@@ -2,3 +2,20 @@
 
 2. pip install dlib
 3. pip install -r requirements.txt
+4. Run "uvicorn main:app --reload" ro run the server 
+5. send endpoint in POST "http://127.0.0.1:8000/images"
+6. send from data in body as  follow :
+
+    file1: 
+    file2: 
+    and change file type from text to file
+
+7. and send the request
+
+8. get Resonse as : 
+    {
+    "match": true,
+    "error": null
+    }
+
+    ![Alt text](image.png)
