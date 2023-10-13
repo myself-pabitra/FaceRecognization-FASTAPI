@@ -1,27 +1,30 @@
-from fastapi import FastAPI, Form
+from fastapi import FastAPI, File, UploadFile
+from pydantic import BaseModel
 import face_recognition
+
 
 app = FastAPI()
 
-@app.post('/images')
-async def post_images(name1: str = Form(...), name2: str = Form(...)):
-    # map the url to the ones in the folder images
-    first_image_path = "images/" + name1
-    second_image_path = "images/" + name2
+class Result(BaseModel):
+    match: bool
+    error: str = None
 
-    # loading the image inside a variable
-    first_image = face_recognition.load_image_file(first_image_path)
-    second_image = face_recognition.load_image_file(second_image_path)
+@app.post('/images', response_model=Result)
+async def post_images(file1: UploadFile = File(...), file2: UploadFile = File(...)):
+    try:
+        first_image = face_recognition.load_image_file(file1.file)
+        second_image = face_recognition.load_image_file(file2.file)
 
-    # encode the images
-    first_face_encoding = face_recognition.face_encodings(first_image)[0]
-    second_face_encoding = face_recognition.face_encodings(second_image)[0]
+        first_face_encoding = face_recognition.face_encodings(first_image)[0]
+        second_face_encoding = face_recognition.face_encodings(second_image)[0]
 
-    # compare the two encoded images
-    result = face_recognition.compare_faces([first_face_encoding], second_face_encoding)
+        result = face_recognition.compare_faces([first_face_encoding], second_face_encoding)
 
-    # returning the final result
-    if result[0] == True:
-        return "True"
-    else:
-        return "False"
+        return Result(match=result[0])
+
+    except FileNotFoundError:
+        return Result(match=False, error="Error: File not found")
+
+    except IndexError:
+        return Result(match=False, error="Error: No face found in one or both images")
+
